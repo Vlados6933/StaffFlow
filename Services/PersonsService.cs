@@ -45,6 +45,7 @@ namespace Services
             var persons = await _personsRepository.GetAllPersons();
 
             return persons.Select(temp => temp.ToPersonResponse()).ToList();
+
         }
 
         public async Task<PersonResponse?> GetPersonByPersonID(Guid? personID)
@@ -64,32 +65,30 @@ namespace Services
 
             List<Person> persons;
 
-            using (Operation.Time("Time for Filtered Persons from Database"))
+            persons = searchBy switch
             {
-                persons = searchBy switch
-                {
-                    nameof(PersonResponse.PersonName) =>
-                           await _personsRepository.GetFilteredPersons(temp => temp.PersonName.Contains(searchString)),
+                nameof(PersonResponse.PersonName) =>
+                       await _personsRepository.GetFilteredPersons(temp => temp.PersonName.Contains(searchString)),
 
-                    nameof(PersonResponse.Email) =>
-                           await _personsRepository.GetFilteredPersons(temp => temp.Email.Contains(searchString)),
+                nameof(PersonResponse.Email) =>
+                       await _personsRepository.GetFilteredPersons(temp => temp.Email.Contains(searchString)),
 
-                    nameof(PersonResponse.DateOfBirth) =>
-                           DateTime.TryParse(searchString, out DateTime parsedDate)
-                           ? await _personsRepository.GetFilteredPersons(temp => temp.DateOfBirth == parsedDate) : new List<Person>(),
+                nameof(PersonResponse.DateOfBirth) =>
+                       DateTime.TryParse(searchString, out DateTime parsedDate)
+                       ? await _personsRepository.GetFilteredPersons(temp => temp.DateOfBirth == parsedDate) : new List<Person>(),
 
-                    nameof(PersonResponse.Gender) =>
-                           await _personsRepository.GetFilteredPersons(temp => temp.Gender.Equals(searchString)),
+                nameof(PersonResponse.Gender) =>
+                       await _personsRepository.GetFilteredPersons(temp => temp.Gender.Equals(searchString)),
 
-                    nameof(PersonResponse.CountryID) =>
-                          await _personsRepository.GetFilteredPersons(temp => temp.Country.CountryName.Contains(searchString)),
+                nameof(PersonResponse.CountryID) =>
+                      await _personsRepository.GetFilteredPersons(temp => temp.Country.CountryName.Contains(searchString)),
 
-                    nameof(PersonResponse.Address) =>
-                           await _personsRepository.GetFilteredPersons(temp => temp.Address.Contains(searchString)),
+                nameof(PersonResponse.Address) =>
+                       await _personsRepository.GetFilteredPersons(temp => temp.Address.Contains(searchString)),
 
-                    _ => await _personsRepository.GetAllPersons()
-                };
-            }
+                _ => await _personsRepository.GetAllPersons()
+            };
+
             _diagnosticContext.Set("Persons", persons);
 
             return persons.Select(temp => temp.ToPersonResponse()).ToList();

@@ -10,7 +10,7 @@ namespace Repositories
 
         public async Task<Country> AddCountry(Country country)
         {
-            _db.Countries.Add(country);
+            await _db.Countries.AddAsync(country);
             await _db.SaveChangesAsync();
 
             return country;
@@ -18,17 +18,23 @@ namespace Repositories
 
         public async Task<List<Country>> GetAllCountries()
         {
-            return await _db.Countries.ToListAsync();
+            return await _db.Countries
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<Country?> GetCountryByCountryID(Guid countryID)
         {
-            return await _db.Countries.FirstOrDefaultAsync(temp => temp.CountryID == countryID);
+            return await _db.Countries
+                .AsNoTracking()
+                .FirstOrDefaultAsync(temp => temp.CountryID == countryID);
         }
 
         public async Task<Country?> GetCountryByCountryName(string countryName)
         {
-            return await _db.Countries.FirstOrDefaultAsync(temp => temp.CountryName == countryName);
+            return await _db.Countries
+                .AsNoTracking()
+                .FirstOrDefaultAsync(temp => temp.CountryName == countryName);
         }
     }
 }

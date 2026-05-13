@@ -5,4 +5,5 @@
   <Project Path="ServiceContracts/ServiceContracts.csproj" />
   <Project Path="Services/Services.csproj" />
   <Project Path="StaffFlow/StaffFlow.csproj" />
+  <Project Path="StaffFlowTest/StaffFlowTest.csproj" Id="d6e9f394-db71-4f73-8674-9cfd21ac2886" />
 </Solution>

@@ -6,19 +6,13 @@ using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
 using StaffFlow.Extensions.ControllerExtensions;
-using StaffFlow.Filters;
 using StaffFlow.Filters.ActionFilters;
-using StaffFlow.Filters.AuthorizationFilters;
 using StaffFlow.Filters.ExceptionFilters;
-using StaffFlow.Filters.ResourceFilters;
-using StaffFlow.Filters.ResultFilters;
 
 namespace StaffFlow.Controllers
 {
     [Route("[controller]")]
-    [ResponseHeaderFilterFactory("MyKey-From-Controller", "MyValue-From-Controller", 3)]
     [TypeFilter<HandleExceptionFilter>]
-    [TypeFilter<PersonsAlwaysRunResultFilter>]
     public class PersonsController(IPersonsService personsService, ICountriesService countriesService, ILogger<PersonsController> logger, IConverter pdfConverter) : Controller
     {
         private readonly IPersonsService _personsService = personsService;
@@ -30,9 +24,6 @@ namespace StaffFlow.Controllers
         [Route("[action]")]
         [Route("/")]
         [TypeFilter<PersonsListActionFilter>(Order = 4)]
-        [ResponseHeaderFilterFactory("MyKey-From-Action", "MyValue-From-Action", 1)]
-        [TypeFilter<PersonsListResultFilter>]
-        [SkipFilter]
         public async Task<IActionResult> Index(string searchBy, string? searchString, string sortBy = nameof(PersonResponse.PersonName), SortOrderOptions sortOrder = SortOrderOptions.ASC)
         {
             _logger.LogInformation("Index action method of PersonController");
@@ -65,7 +56,6 @@ namespace StaffFlow.Controllers
         [HttpPost]
         [Route("[action]")]
         [TypeFilter<PersonCreateAndEditPostActionFilter>]
-        [TypeFilter<FeatureDisableResourseFilter>(Arguments = new object[] { false })]
         public async Task<IActionResult> Create(PersonAddRequest personAddRequest)
         {
             PersonResponse personResponse = await _personsService.AddPerson(personAddRequest);
@@ -75,7 +65,6 @@ namespace StaffFlow.Controllers
 
         [HttpGet]
         [Route("[action]/{personID}")]
-        [TypeFilter<TokenResultFilter>]
         public async Task<IActionResult> Edit(Guid personID)
         {
             PersonResponse? personResponse = await _personsService.GetPersonByPersonID(personID);
@@ -96,7 +85,6 @@ namespace StaffFlow.Controllers
         [HttpPost]
         [Route("[action]/{personID}")]
         [TypeFilter<PersonCreateAndEditPostActionFilter>]
-        [TypeFilter<TokenAuthorizationFilter>]
         public async Task<IActionResult> Edit(PersonUpdateRequest personUpdateRequest)
         {
             PersonResponse? personResponse = await _personsService.GetPersonByPersonID(personUpdateRequest.PersonID);

@@ -12,20 +12,8 @@ namespace StaffFlow.Extensions.StartupExtensions
     {
         public static IServiceCollection ConfigureSrevise(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddControllersWithViews(options =>
-            {
-                var logger = services.BuildServiceProvider().
-                GetRequiredService<ILogger<ResponseHeaderActionFilter>>();
+            services.AddControllersWithViews();
 
-                options.Filters.Add(new ResponseHeaderActionFilter(logger)
-                {
-                    Key = "MyKey-From-Global",
-                    Value = "MyValue-From-Global",
-                    Order = 2
-                });
-            });
-
-            services.AddTransient<ResponseHeaderActionFilter>();
             services.AddScoped<ICountriesService, CountriesService>();
             services.AddScoped<IPersonsService, PersonsService>();
             services.AddScoped<ICountriesRepository, CountriesRepository>();
